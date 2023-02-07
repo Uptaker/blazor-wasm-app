@@ -1,0 +1,18 @@
+@{ var padding = iconOnly ? "p-3" : "px-5 py-3"; }
+<a title="@title" href="@href" class="inline-flex items-center justify-center @padding rounded-lg shadow-sm cursor-pointer hover:text-white bg-slate-600 hover:bg-slate-500">
+  @ChildContent
+</a>   
+
+@code {
+  [Parameter]
+  public RenderFragment ChildContent { get; set; }
+    
+  [Parameter]
+  public string href { get; set; }
+    
+  [Parameter]
+  public string title { get; set; }
+    
+  [Parameter]
+  public bool iconOnly { get; set; }
+}

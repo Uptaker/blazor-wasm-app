@@ -1,0 +1,18 @@
+@inject IJSRuntime JsRuntime
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+
+<Container>
+    <h1 class="text-center text-xl">Hello, <b class="bold ">@name</b></h1>
+</Container>
+
+@code {
+    private string? name;
+    protected override async Task OnInitializedAsync() {
+        var storedName = localStorage.GetItemAsString("name");
+        if (storedName != null) name= storedName;
+        else {
+            name = await JsRuntime.InvokeAsync<string>("prompt", "Hello! What's your name?");
+            localStorage.SetItemAsString("name", name);
+        }
+    }
+}

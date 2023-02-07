@@ -1,0 +1,33 @@
+﻿@page "/"
+@inject IJSRuntime JsRuntime
+@inject Blazored.LocalStorage.ISyncLocalStorageService localStorage
+
+<div class="flex align-center items-center flex-col">
+    <nav class="flex justify-start w-full">
+        <NavLink href="tasks">
+            <div title="Notes" class="rounded-full bg-slate-500 p-3 hover:text-white hover:bg-slate-900 m-5"><NotesIcon/></div>
+        </NavLink>        
+    </nav>
+    
+    <div class="mt-48 w-full flex justify-center">
+        <Greeting/>
+    </div>
+    
+    <div class="mt-48 w-full flex justify-center">
+        <Search/>
+    </div>
+</div>
+
+
+@code {
+    private string? name;
+    
+    protected override async Task OnInitializedAsync() {
+        var storedName = localStorage.GetItemAsString("name");
+        if (storedName != null) name= storedName;
+        else {
+            name = await JsRuntime.InvokeAsync<string>("prompt", "Hello! What's your name?");
+            localStorage.SetItemAsString("name", name);
+        }
+    }
+}

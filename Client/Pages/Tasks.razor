@@ -1,0 +1,69 @@
+﻿@page "/tasks"
+@using Shared
+@inject HttpClient Http
+
+<div class="flex align-center items-center flex-col pb-12">
+    
+    <div class="flex justify-between md:w-5/12 w-10/12 mt-12">
+        <ButtonLink href="/" title="Back to Dashboard">
+            <BackIcon/>
+            <span class="ml-3 font-medium">Back</span>
+        </ButtonLink>
+        
+        <Button title="Add ask" onClick="toggleShow">
+            @if (showAdd) {
+                <CancelIcon/>
+                <b>Cancel</b>
+            } else {
+                <PlusIcon/>
+                <b>Add task</b>
+            }
+        </Button>
+    </div>
+    
+    @if (showAdd) {
+        <Container>
+            <TodoForm @bind-show="showAdd" @bind-show:after="Load"/>
+        </Container>
+    }
+
+    <Container>
+        @if (tasks != null) {
+            if (tasks.Count > 0) {
+                for (var i = 0; i < tasks.Count; i++) {
+                    var iCopy = i;
+                    <TodoItem @bind-task="@tasks[iCopy]" @bind-task:after="Load"/>
+                    @if (iCopy < tasks.Count - 1) {
+                        <hr class="h-px my-8 border-dashed bg-slate-700 border-0">
+                    }
+
+                }
+            } else {
+                <p>No assigned tasks</p>
+            }
+        } else {
+            <p>Loading tasks...</p>
+        }
+    </Container>
+</div>
+
+@code {
+    private List<Todo>? tasks;
+    private bool showAdd;
+
+    private void toggleShow() {
+        showAdd = !showAdd;
+    }
+
+    private async Task Load() {
+        var url = "http://localhost:5000/Todo";
+        Console.WriteLine(url);
+        var res = await Http.GetAsync(url);
+        if (res.IsSuccessStatusCode) tasks = await res.Content.ReadFromJsonAsync<List<Todo>>();
+        else Console.WriteLine("No tasks");
+    }
+
+    protected override async Task OnInitializedAsync() {
+        await Load();
+    }
+}

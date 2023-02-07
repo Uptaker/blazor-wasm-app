@@ -1,0 +1,25 @@
+@{ var padding = iconOnly ? "p-3" : "px-5 py-3"; }
+<button type="button" class="inline-flex items-center justify-center gap-3 @padding rounded-lg shadow-sm cursor-pointer hover:text-white bg-slate-600 hover:bg-slate-500"
+        title="@title" @onclick="dispatchClick">
+    @ChildContent
+</button>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    
+    [Parameter]
+    public string title { get; set; }
+    
+    [Parameter]
+    public bool iconOnly { get; set; }
+    
+    [Parameter]
+    public EventCallback<string> onClick { get; set; }
+    
+    private async Task dispatchClick() {
+        if (onClick.HasDelegate) {
+            await onClick.InvokeAsync();
+        }
+    }
+}

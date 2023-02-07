@@ -1,0 +1,20 @@
+.text-center {
+    text-align: center;
+}
+
+.layout {
+    max-width: 1080px;
+    margin: 5% 20%;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-column {
+    flex-direction: column;
+}

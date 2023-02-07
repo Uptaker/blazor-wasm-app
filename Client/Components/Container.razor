@@ -1,0 +1,9 @@
+
+<div class="md:w-5/12 w-10/12 mt-9 rounded-lg p-5 shadow-xl border-l-8 bg-gradient-to-r from-slate-700 to-slate-600 border-slate-800">
+  @ChildContent
+</div>
+
+@code {
+  [Parameter]
+  public RenderFragment ChildContent { get; set; }
+}

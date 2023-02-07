@@ -1,0 +1,68 @@
+@using Shared
+@using System.Text
+@inject HttpClient Http
+
+
+<ul class="w-full divide-y divide-gray-200">
+  <li class="pb-3 sm:pb-4">
+    <div class="flex items-center justify-between gap-3 space-x-4 w-full">
+      @if (isEditing) {
+        <TodoForm @bind-task="@task" show="true" @bind-task:after="() => isEditing = false">
+          <Button onClick="() => isEditing = false">Cancel</Button>
+        </TodoForm>
+      } else {
+        <div class="flex-shrink-0 w-5">
+          <div class="flex items-center">
+            <input title="Mark as complete/incomplete" type="checkbox" checked="@task.done" @onchange="toggleDone" class="w-6 h-6 text-slate-600 bg-slate-100 border-slate-300 rounded  focus:ring-slate-500">
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-medium text-lg text-slate-300 ">
+            @task.title
+          </p>
+          <p class="text-sm text-slate-300 whitespace-pre-line">
+            @task.description
+          </p>
+        </div>
+        <div class="inline-flex items-end gap-2 text-base font-semibold">
+          <span title="Delete" @onclick="delete" class="inline-flex items-center justify-center p-2 rounded-lg shadow-sm cursor-pointer hover:text-white bg-rose-900 hover:bg-rose-800">
+            <DeleteIcon/>
+          </span>
+        
+          <span title="Edit" @onclick="() => isEditing = true" class="inline-flex items-center justify-center p-2 rounded-lg shadow-sm cursor-pointer hover:text-white bg-sky-900 hover:bg-sky-800">
+            <EditIcon/>
+          </span>
+        </div>
+      }
+    </div>
+  </li>
+</ul>
+
+
+
+@code {
+
+    private bool isEditing;
+    
+    [Parameter] public Todo task { get; set; }
+
+    [Parameter] public EventCallback<Todo> taskChanged { get; set; }
+
+    private async Task toggleDone() {
+      task.done = !task.done;
+        const string url = "http://localhost:5000/Todo";
+        await Http.PostAsync(url, JsonContent.Create(task));
+        await taskChanged.InvokeAsync(task);
+    }
+
+  private async Task delete() {
+    const string url = "http://localhost:5000/Todo";
+    var request = new HttpRequestMessage {
+      Method = HttpMethod.Delete,
+      RequestUri = new Uri(url),
+      Content = JsonContent.Create(task)
+    };
+    await Http.SendAsync(request);
+    await taskChanged.InvokeAsync(task);
+  }
+}

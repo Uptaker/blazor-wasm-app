@@ -1,0 +1,60 @@
+@using Shared
+@inject IJSRuntime JsRuntime
+@inject HttpClient Http
+
+<form class="px-8 pt-6 pb-8 mb-4 w-full">
+  <div class="mb-4">
+    <label class="block text-slate-300 text-sm font-bold mb-2" for="Title">Title</label>
+    <input class="shadow appearance-none bg-slate-700 outline-slate-300 text-slate-300 border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline" 
+           id="Title" type="text" placeholder="Task main title" @bind="task.title" required>
+  </div>
+  
+  <div class="mb-6">
+    <label class="block text-slate-300 text-sm font-bold mb-2" for="Description">Description</label>
+    <textarea class="shadow appearance-none border bg-slate-700 rounded w-full py-2 px-3 outline-slate-300 text-slate-300 leading-tight focus:outline-none focus:shadow-outline" 
+           id="Description" type="text" placeholder="Minor details" @bind="task.description" rows="3" required>
+  </textarea>
+  </div>
+  
+  <div class="flex items-center justify-between">
+    <div>@ChildContent</div>
+    <Button onClick="Submit">Save</Button>
+  </div>
+</form>
+
+@code {
+
+  [Parameter]
+  public Todo task { set; get; } = new() { description = "", title = "" };
+
+  [Parameter]
+  public bool show { get; set; }
+  
+  [Parameter]
+  public RenderFragment? ChildContent { get; set; }
+
+  [Parameter]
+  public EventCallback<Todo> taskChanged { get; set; }
+  
+  [Parameter]
+  public EventCallback<bool> showChanged { get; set; }
+
+  private async Task Submit() {
+    if (task.title.Length == 0) {
+      Alert("No title"); return;
+    }
+    if (task.description?.Length == 0) {
+      Alert("No Description"); return;
+    } 
+    const string url = "http://localhost:5000/Todo";
+    var res = await Http.PostAsync(url, JsonContent.Create(task));
+    if (!res.IsSuccessStatusCode) Alert("Failed");
+    show = false;
+    await taskChanged.InvokeAsync(task);
+    await showChanged.InvokeAsync(show);
+  }
+
+  private void Alert(string message) {
+    JsRuntime.InvokeAsync<string>("alert", message);
+  }
+}
