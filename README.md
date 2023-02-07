@@ -28,7 +28,7 @@ Start Server
 dotnet watch run --non-interactive --project Server
 ```
 
-Painstakingly built on Linux ;). `--non-interactive` is required for hot-reload to properly watch for changes *for now*.
+Built on Linux ;). `--non-interactive` is required for hot-reload to properly watch for changes *for now*.
 
 ## Pictures
 
